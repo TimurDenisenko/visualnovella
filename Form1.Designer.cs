@@ -101,6 +101,7 @@
             this.newgame.Text = "New game";
             this.newgame.TransparentBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(124)))), ((int)(((byte)(32)))), ((int)(((byte)(58)))));
             this.newgame.UseVisualStyleBackColor = true;
+            this.newgame.Click += new System.EventHandler(this.newgame_Click);
             // 
             // Form1
             // 

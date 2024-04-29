@@ -77,6 +77,7 @@
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
     </Compile>
     <EmbeddedResource Include="TestPage.resx">
       <DependentUpon>TestPage.cs</DependentUpon>
@@ -96,6 +97,12 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\pictureBox1.Image.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\photo_5857042649993822484_x.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\image %281%29.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

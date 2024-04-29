@@ -1,5 +1,4 @@
-﻿
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.Drawing.Drawing2D;
 using System.Drawing;
 using System.Linq;
@@ -13,6 +12,14 @@ namespace visualnovella
         private Color borderColor = Color.Black;
         private int borderThickness = 1;
         private int opacity;
+        public CustomLabel()
+        {
+            SetStyle(ControlStyles.SupportsTransparentBackColor, true);
+            SetStyle(ControlStyles.ResizeRedraw, true);
+            SetStyle(ControlStyles.OptimizedDoubleBuffer, true);
+            SetStyle(ControlStyles.AllPaintingInWmPaint, true);
+            SetStyle(ControlStyles.UserPaint, true);
+        }
         public int Opacity
         {
             get { return opacity; }
@@ -105,13 +112,13 @@ namespace visualnovella
                           .ForEach(c => c.DrawToBitmap(bmp, c.Bounds));
 
 
-                    e.Graphics.DrawImage(bmp, -Left, -Top);
+                    e.Graphics.DrawImage(bmp, Left, Top);
                     using (var b = new SolidBrush(Color.FromArgb(this.Opacity, this.TransparentBackColor)))
                     {
                         e.Graphics.FillRectangle(b, this.ClientRectangle);
                     }
-                    e.Graphics.TextRenderingHint = System.Drawing.Text.TextRenderingHint.ClearTypeGridFit;
-                    TextRenderer.DrawText(e.Graphics, "", this.Font, this.ClientRectangle, this.ForeColor, Color.Transparent);
+                    Rectangle textRect = new Rectangle(ClientRectangle.X + 15, ClientRectangle.Y+15, ClientRectangle.Width, ClientRectangle.Height);
+                    TextRenderer.DrawText(e.Graphics, Text, this.Font, textRect, this.ForeColor, Color.Transparent, TextFormatFlags.Left | TextFormatFlags.Top);
                 }
             }
         }

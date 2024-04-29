@@ -46,5 +46,13 @@ namespace visualnovella
         }
 
         private void exit_Click(object sender, EventArgs e) => Close();
+
+        private void newgame_Click(object sender, EventArgs e)
+        {
+            this.Hide();
+            TestPage tp = new TestPage();
+            tp.Closed += (s, args) => this.Close();
+            tp.Show();
+        }
     }
 }
