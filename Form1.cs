@@ -1,10 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -12,6 +7,8 @@ namespace visualnovella
 {
     public partial class Form1 : Form
     {
+        string Name;
+        Size window = new Size(752, 473);
         public Form1()
         {
             InitializeComponent();
@@ -21,6 +18,8 @@ namespace visualnovella
             _continue.MouseLeave += btn_MouseLeave;
             exit.MouseEnter += btn_MouseEnter;
             exit.MouseLeave += btn_MouseLeave;
+
+
         }
 
         private async void btn_MouseLeave(object sender, EventArgs e)
@@ -50,9 +49,13 @@ namespace visualnovella
         private void newgame_Click(object sender, EventArgs e)
         {
             this.Hide();
-            TestPage tp = new TestPage();
-            tp.Closed += (s, args) => this.Close();
-            tp.Show();
+            SettingForm sf = new SettingForm();
+            sf.Closed += (s, args) => this.Close();
+            sf.Show();
         }
+        //this.Hide();
+        //TestPage tp = new TestPage();
+        //tp.Closed += (s, args) => this.Close();
+        //tp.Show();
     }
 }
