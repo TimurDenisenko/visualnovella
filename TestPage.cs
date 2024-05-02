@@ -26,7 +26,7 @@ namespace visualnovella
             customLabel1.Padding = new Padding(15, 15, 0, 0);
             customLabel1.Radius = 10;
             customLabel1.Size = new Size(700, 100);
-            customLabel1.Text = "Hello i am dolboeb and this is test";
+            customLabel1.Text = Setting.Gender+" "+Setting.Name;
             customLabel1.TransparentBackColor = Color.White;
             BackgroundImage = Properties.Resources.back;
             ClientSize = new Size(752, 473);

@@ -2,13 +2,14 @@
 using System.Drawing;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Collections.Generic;
 
 namespace visualnovella
 {
     public partial class Form1 : Form
     {
-        string Name;
-        Size window = new Size(752, 473);
+        private List<Form> pages;
+        private int i;
         public Form1()
         {
             InitializeComponent();
@@ -50,12 +51,86 @@ namespace visualnovella
         {
             this.Hide();
             SettingForm sf = new SettingForm();
-            sf.Closed += (s, args) => this.Close();
+            sf.Closed += (s, args) => Game();
             sf.Show();
         }
-        //this.Hide();
-        //TestPage tp = new TestPage();
-        //tp.Closed += (s, args) => this.Close();
-        //tp.Show();
+        private void Game()
+        {
+            pages = new List<Form>
+            {
+                CreatePage(Properties.Resources.girl,Properties.Resources.back,Setting.Name),
+                CreatePage(Properties.Resources.girl,Properties.Resources.back,Setting.Gender.ToString()),
+                CreatePage(Properties.Resources.girl,Properties.Resources.back,new Point(0,0),"You need to work",@""),
+            };
+            pages[i].Show();
+        }
+        private Form CreatePage(Bitmap person, Bitmap back, string dialog)
+        {
+            PictureBox pictureBox1 = new PictureBox();
+            CustomLabel customLabel1 = new CustomLabel();
+            pictureBox1.BackColor = Color.Transparent;
+            pictureBox1.Image = person;
+            pictureBox1.Location = new Point(49, 83);
+            pictureBox1.Size = new Size(246, 365);
+            pictureBox1.SizeMode = PictureBoxSizeMode.StretchImage;
+            customLabel1.BorderColor = Color.Black;
+            customLabel1.BorderThickness = 3;
+            customLabel1.Font = new Font("Arial", 9.75F, FontStyle.Bold, GraphicsUnit.Point, 204);
+            customLabel1.ImageAlign = ContentAlignment.TopLeft;
+            customLabel1.Location = new Point(22, 364);
+            customLabel1.MinimumSize = new Size(700, 100);
+            customLabel1.Opacity = 150;
+            customLabel1.Padding = new Padding(15, 15, 0, 0);
+            customLabel1.Radius = 10;
+            customLabel1.Size = new Size(700, 100);
+            customLabel1.Text = dialog;
+            customLabel1.TransparentBackColor = Color.White;
+            customLabel1.Click += (s, e) =>
+            {
+                pages[i].Close();
+                pages[++i].Show();
+            };
+            return new Form
+            {
+                BackgroundImage = back,
+                ClientSize = new Size(752, 473),
+                Text = "ITopia",
+                Controls = { customLabel1, pictureBox1}
+            };
+        }
+        private Form CreatePage(Bitmap person, Bitmap back,Point pointOfCode, string dialog,string code)
+        {
+            PictureBox pictureBox1 = new PictureBox();
+            CustomLabel customLabel1 = new CustomLabel();
+            pictureBox1.BackColor = Color.Transparent;
+            pictureBox1.Image = person;
+            pictureBox1.Location = new Point(49, 83);
+            pictureBox1.Size = new Size(246, 365);
+            pictureBox1.SizeMode = PictureBoxSizeMode.StretchImage;
+            customLabel1.BorderColor = Color.Black;
+            customLabel1.BorderThickness = 3;
+            customLabel1.Font = new Font("Arial", 9.75F, FontStyle.Bold, GraphicsUnit.Point, 204);
+            customLabel1.ImageAlign = ContentAlignment.TopLeft;
+            customLabel1.Location = new Point(22, 364);
+            customLabel1.MinimumSize = new Size(700, 100);
+            customLabel1.Opacity = 150;
+            customLabel1.Padding = new Padding(15, 15, 0, 0);
+            customLabel1.Radius = 10;
+            customLabel1.Size = new Size(700, 100);
+            customLabel1.Text = dialog;
+            customLabel1.TransparentBackColor = Color.White;
+            customLabel1.Click += (s, e) =>
+            {
+                pages[i].Close();
+                pages[++i].Show();
+            };
+            return new Form
+            {
+                BackgroundImage = back,
+                ClientSize = new Size(752, 473),
+                Text = "ITopia",
+                Controls = { customLabel1, pictureBox1 }
+            };
+        }
     }
 }
