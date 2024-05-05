@@ -3,6 +3,8 @@ using System.Drawing;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Collections.Generic;
+using Microsoft.CodeAnalysis.CSharp.Scripting;
+using Microsoft.CodeAnalysis.Scripting;
 
 namespace visualnovella
 {
@@ -60,7 +62,7 @@ namespace visualnovella
             {
                 CreatePage(Properties.Resources.girl,Properties.Resources.back,Setting.Name),
                 CreatePage(Properties.Resources.girl,Properties.Resources.back,Setting.Gender.ToString()),
-                CreatePage(Properties.Resources.girl,Properties.Resources.back,new Point(0,0),"You need to work",@""),
+                CreatePage(Properties.Resources.girl,Properties.Resources.back,new Point(0,0),"You need to work","return 5;"),
             };
             pages[i].Show();
         }
@@ -102,6 +104,34 @@ namespace visualnovella
         {
             PictureBox pictureBox1 = new PictureBox();
             CustomLabel customLabel1 = new CustomLabel();
+            TextBox textBox1 = new TextBox();
+            textBox1.Size = new Size(200,200);
+            textBox1.Location = pointOfCode;
+            textBox1.Text = code;
+            textBox1.Multiline = true;
+            textBox1.TabStop = false;  
+            textBox1.KeyDown += async (s, e) =>
+            {
+                switch (e.KeyCode)
+                {
+                    case Keys.Tab:
+                        textBox1.SelectedText = "   ";
+                        break;
+                    case Keys.Insert:
+                        try
+                        {
+                            ScriptState result = await CSharpScript.RunAsync(textBox1.Text, ScriptOptions.Default.WithReferences(typeof(MessageBox).Assembly));
+                            MessageBox.Show(result.ReturnValue.ToString());
+                        }
+                        catch (Exception ex)
+                        {
+                            MessageBox.Show(ex.Message);
+                        }
+                        break;
+                    default:
+                        break;
+                }
+            };
             pictureBox1.BackColor = Color.Transparent;
             pictureBox1.Image = person;
             pictureBox1.Location = new Point(49, 83);
@@ -129,7 +159,7 @@ namespace visualnovella
                 BackgroundImage = back,
                 ClientSize = new Size(752, 473),
                 Text = "ITopia",
-                Controls = { customLabel1, pictureBox1 }
+                Controls = { textBox1, customLabel1, pictureBox1, },
             };
         }
     }
