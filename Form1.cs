@@ -12,10 +12,12 @@ namespace visualnovella
     {
         private List<NovellaPage> pages;
         private int i;
-        private PictureBox pictureBox;
-        private CustomLabel customLabel;
-        private TextBox textBox;
-        private Form novella;
+        private PictureBox characterImage;
+        private CustomLabel dialogLabel;
+        private TextBox codeEditor;
+        private Form novellaForm;
+        private PictureBox menu;
+        private UserControl menuFrame;
         public Form1()
         {
             InitializeComponent();
@@ -25,8 +27,6 @@ namespace visualnovella
             _continue.MouseLeave += btn_MouseLeave;
             exit.MouseEnter += btn_MouseEnter;
             exit.MouseLeave += btn_MouseLeave;
-
-
         }
 
         private async void btn_MouseLeave(object sender, EventArgs e)
@@ -57,126 +57,136 @@ namespace visualnovella
         {
             this.Hide();
             SettingForm sf = new SettingForm();
-            sf.Closed += (s, args) =>
-            {
-                
-                Game();
-            };
+            sf.Closed += (s, args) => Game();
             sf.Show();
         }
         private void Game()
         {
-            pictureBox = new PictureBox();
-            customLabel = new CustomLabel();
-            textBox = new TextBox();
-            novella = new Form
+            characterImage = new PictureBox();
+            dialogLabel = new CustomLabel();
+            codeEditor = new TextBox();
+            menu = new PictureBox();
+            menuFrame = new UserControl();
+
+            novellaForm = new Form
             {
-                ClientSize = new Size(752, 473),
-                Text = "ITopia",
-                Controls = { customLabel, pictureBox, textBox }
+                Controls = { codeEditor, dialogLabel, characterImage, menu, menuFrame }
             };
+
             pages = new List<NovellaPage>
             {
                 new NovellaPage(Setting.Name,Properties.Resources.girl,Properties.Resources.back, PageType.Text),
                 new NovellaPage(Setting.Gender.ToString(),Properties.Resources.girl,Properties.Resources.back, PageType.Text),
                 new NovellaPage("You need to work",Properties.Resources.girl,Properties.Resources.back,"return 5;",new Point(0,0), PageType.Code),
             };
-            novella.Show();
-            CreatePage(pages[i]);
 
+            #region Design and events
+            characterImage.BackColor = Color.Transparent;
+            characterImage.SizeMode = PictureBoxSizeMode.StretchImage;
+
+            dialogLabel.Click+= (s, args) => CreatePage(pages[++i]);
+            dialogLabel.BorderColor = Color.Black;
+            dialogLabel.BorderThickness = 3;
+            dialogLabel.Font = new Font("Arial", 9.75F, FontStyle.Bold, GraphicsUnit.Point, 204);
+            dialogLabel.ImageAlign = ContentAlignment.TopLeft;
+            dialogLabel.Location = new Point(22, 364);
+            dialogLabel.MinimumSize = new Size(700, 100);
+            dialogLabel.Opacity = 150;
+            dialogLabel.Padding = new Padding(15, 15, 0, 0);
+            dialogLabel.Radius = 10;
+            dialogLabel.TransparentBackColor = Color.White;
+
+            codeEditor.Multiline = true;
+            codeEditor.TabStop = false;
+            codeEditor.KeyDown += TextBox_KeyDown;
+
+            novellaForm.ClientSize = new Size(752,473);
+            novellaForm.Text = "ITopia";
+            novellaForm.KeyDown += Novella_KeyDown;
+
+            menu.Location = new Point(10,10);
+            menu.BackColor = Color.Transparent;
+            menu.Image = Properties.Resources.menu;
+            menu.SizeMode = PictureBoxSizeMode.StretchImage;
+            menu.Size = new Size(50, 50);
+
+            //MENUFRAME надо сделать
+            #endregion
+
+            novellaForm.Show();
+
+            CreatePage(pages[i]);
         }
-        private void CreatePage(NovellaPage page)
+        private void Menu()
         {
-            textBox.Visible = false;
-            pictureBox.BackColor = Color.Transparent;
-            pictureBox.Image = page.Person;
-            pictureBox.Location = new Point(49, 83);
-            pictureBox.Size = new Size(246, 365);
-            pictureBox.SizeMode = PictureBoxSizeMode.StretchImage;
-            customLabel.BorderColor = Color.Black;
-            customLabel.BorderThickness = 3;
-            customLabel.Font = new Font("Arial", 9.75F, FontStyle.Bold, GraphicsUnit.Point, 204);
-            customLabel.ImageAlign = ContentAlignment.TopLeft;
-            customLabel.Location = new Point(22, 364);
-            customLabel.MinimumSize = new Size(700, 100);
-            customLabel.Opacity = 150;
-            customLabel.Padding = new Padding(15, 15, 0, 0);
-            customLabel.Radius = 10;
-            customLabel.Size = new Size(700, 100);
-            customLabel.Text = page.Dialog;
-            customLabel.TransparentBackColor = Color.White;
-            customLabel.Click += (s, e) =>
-            {
-                if (pages[++i].PageType == PageType.Code)
-                {
-                    CreatePage(pages[i], true);
-                }
-                else
-                {
-                    CreatePage(pages[i]);
-                }
-            };
-            novella.BackgroundImage = page.Background;
+            menuFrame
         }
-        private void CreatePage(NovellaPage page, bool isCode)
+        private void Novella_KeyDown(object sender, KeyEventArgs e)
         {
-            textBox.Visible = true;
-            textBox.Size = new Size(200,200);
-            textBox.Location = page.CodeEditorLocation;
-            textBox.Text = page.Code;
-            textBox.Multiline = true;
-            textBox.TabStop = false;  
-            textBox.KeyDown += async (s, e) =>
+            switch (e.KeyCode)
             {
-                switch (e.KeyCode)
-                {
-                    case Keys.Tab:
-                        textBox.SelectedText = "   ";
-                        break;
-                    case Keys.Insert:
-                        try
-                        {
-                            ScriptState result = await CSharpScript.RunAsync(textBox.Text, ScriptOptions.Default.WithReferences(typeof(MessageBox).Assembly));
-                            MessageBox.Show(result.ReturnValue.ToString());
-                        }
-                        catch (Exception ex)
-                        {
-                            MessageBox.Show(ex.Message);
-                        }
-                        break;
-                    default:
-                        break;
-                }
-            };
-            pictureBox1.BackColor = Color.Transparent;
-            pictureBox1.Image = page.Person;
-            pictureBox1.Location = new Point(49, 83);
-            pictureBox1.Size = new Size(246, 365);
-            pictureBox1.SizeMode = PictureBoxSizeMode.StretchImage;
-            customLabel.BorderColor = Color.Black;
-            customLabel.BorderThickness = 3;
-            customLabel.Font = new Font("Arial", 9.75F, FontStyle.Bold, GraphicsUnit.Point, 204);
-            customLabel.ImageAlign = ContentAlignment.TopLeft;
-            customLabel.Location = new Point(22, 364);
-            customLabel.MinimumSize = new Size(700, 100);
-            customLabel.Opacity = 150;
-            customLabel.Padding = new Padding(15, 15, 0, 0);
-            customLabel.Radius = 10;
-            customLabel.Size = new Size(700, 100);
-            customLabel.Text = page.Dialog;
-            customLabel.TransparentBackColor = Color.White;
-            customLabel.Click += (s, e) =>
+                case Keys.Right:
+                    CreatePage(pages[++i]);
+                    break;
+                case Keys.Space:
+                    CreatePage(pages[++i]);
+                    break;
+                case Keys.Left:
+                    CreatePage(pages[--i]);
+                    break;
+                case Keys.Escape:
+                    Menu();
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        private async void TextBox_KeyDown(object sender, KeyEventArgs e)
+        {
+            switch (e.KeyCode)
             {
-                if (pages[++i].PageType == PageType.Code)
-                {
-                    CreatePage(pages[i], true);
-                }
-                else
-                {
-                    CreatePage(pages[i]);
-                }
-            };
-            novella.BackgroundImage = page.Background;
+                case Keys.Tab:
+                    codeEditor.SelectedText = "   ";
+                    break;
+                case Keys.Insert:
+                    try
+                    {
+                        ScriptState result = await CSharpScript.RunAsync(codeEditor.Text, ScriptOptions.Default.WithReferences(typeof(MessageBox).Assembly));
+                        MessageBox.Show(result.ReturnValue.ToString());
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show(ex.Message);
+                    }
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        private async void CreatePage(NovellaPage page)
+        {
+            if (page.PageType == PageType.Code)
+            {
+                codeEditor.Visible = true;
+                codeEditor.Size = new Size(200, 200);
+                codeEditor.Location = page.CodeEditorLocation;
+                codeEditor.Text = page.Code;
+            }
+            else
+                codeEditor.Visible = false;
+            characterImage.Image = page.Person;
+            characterImage.Location = new Point(49, 83);
+            characterImage.Size = new Size(246, 365);
+            dialogLabel.Size = new Size(700, 100);
+            dialogLabel.Text = string.Empty;
+            foreach (char item in page.Dialog)
+            {
+                dialogLabel.Text += item;
+                await Task.Delay(20);
+            }
+            novellaForm.BackgroundImage = page.Background;
         }
     }
 }

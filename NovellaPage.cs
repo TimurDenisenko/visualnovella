@@ -1,4 +1,5 @@
-﻿using System.Drawing;
+﻿using System;
+using System.Drawing;
 
 namespace visualnovella
 {
@@ -10,6 +11,7 @@ namespace visualnovella
         public Bitmap Background { get; set; }
         public Point CodeEditorLocation { get; set; }
         public PageType PageType { get; set; }
+        public Tuple<NovellaPage[], NovellaPage[]> Options { get; set; }
         public NovellaPage(string dialog, Bitmap person, Bitmap background, PageType pageType)
         { 
             Dialog = dialog;
