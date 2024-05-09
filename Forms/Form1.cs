@@ -32,6 +32,57 @@ namespace visualnovella
             _continue.MouseLeave += btn_MouseLeave;
             exit.MouseEnter += btn_MouseEnter;
             exit.MouseLeave += btn_MouseLeave;
+
+            save1 = new Button();
+            save2 = new Button();
+            save3 = new Button();
+            saveLoadFrame = new CustomUserControl { Controls = { save1, save2, save3 }, Visible = false, };
+            menuFrame = new CustomUserControl { };
+            foreach (CustomUserControl item in new CustomUserControl[] { menuFrame, saveLoadFrame })
+            {
+                item.BorderColor = Color.Black;
+                item.BorderThickness = 3;
+                item.Opacity = 150;
+                item.Radius = 10;
+                item.TransparentBackColor = Color.Gray;
+                item.Size = new Size(400, 200);
+                item.Left = (ClientSize.Width - menuFrame.Width) / 2;
+                item.Top = (ClientSize.Height - menuFrame.Height) / 2;
+                item.MouseEnter += Menu_MouseEnter2;
+                item.MouseLeave += Menu_MouseLeave2;
+                item.VisibleChanged += Menu_VisibleChanged2;
+            }
+
+            Button[] saves = new Button[] { save1, save2, save3 };
+            foreach (Button item in saves)
+            {
+                item.Size = new Size(saveLoadFrame.Width - 50, saveLoadFrame.Height / 4);
+                item.Font = new Font("Arial", 15, FontStyle.Bold, GraphicsUnit.Point, 204);
+                item.BackColor = Color.Gray;
+                item.Left = (saveLoadFrame.Width - item.Width) / 2;
+                item.Click += Save_Click;
+            }
+            for (int i = 0; i < 3; i++)
+            {
+                string[] savesList = FileManage.GetFilesFromFolder(FileManage.path + "\\" + i);
+                saves[i].Tag = i;
+                try
+                {
+                    saves[i].Text = savesList[0];
+                }
+                catch (Exception)
+                {
+                    saves[i].Text = "Empty";
+                }
+            }
+            save1.Top = 15;
+            save2.Top = 75;
+            save3.Top = 135;
+
+            Controls.Add(saveLoadFrame);
+            newgame.SendToBack();
+            _continue.SendToBack();
+            exit.SendToBack();
         }
 
         private async void btn_MouseLeave(object sender, EventArgs e)
@@ -65,7 +116,14 @@ namespace visualnovella
             sf.Closed += (s, args) => Game();
             sf.Show();
         }
-        private async void Game()
+
+        private void _continue_Click(object sender, EventArgs e)
+        {
+            saveLoadFrame.Visible = true;
+            action = "Load";
+        }
+
+        private void Game()
         {
             #region Declaration of variables
             characterImage = new PictureBox();
@@ -76,7 +134,7 @@ namespace visualnovella
             buttonSave = new Label();
             buttonLoad = new Label();
             buttonClose = new Label();
-            menuFrame = new CustomUserControl { Controls = { buttonMainMenu, buttonSave, buttonLoad, buttonClose } };
+            menuFrame.Controls.AddRange(new Label[] { buttonMainMenu, buttonSave, buttonLoad, buttonClose });
             nextPage = new PictureBox();
             previousPage = new PictureBox();
             labelTitle = new Label();
@@ -84,11 +142,37 @@ namespace visualnovella
             previousPageWhite = new PictureBox();
             dialogLabel = new CustomLabel { Controls = { nextPage, previousPage } };
             effect = new Sound();
-            save1 = new Button();
-            save2 = new Button();
-            save3 = new Button();
-            saveLoadFrame = new CustomUserControl { Controls = { save1, save2, save3 } };
             #endregion
+
+
+            pages = new List<NovellaPage>
+            {
+                new NovellaPage("Monday","none"),
+                new NovellaPage("MH - (No way, first day of new university and I’m late)",Properties.Resources.MH,Properties.Resources.university,"University"),
+                new NovellaPage("MH - (Where is this classroom A398?)",Properties.Resources.MH,Properties.Resources.university,"University"),
+                new NovellaPage("Anna - Hi, you look lost. Don't know where your classroom is?",Properties.Resources.anna,Properties.Resources.university,"University"),
+                new NovellaPage("MH - Hi, yep, I can’t find A398.",Properties.Resources.MH,Properties.Resources.university,"University"),
+                new NovellaPage("Anna - My name is Anna, what is your name?",Properties.Resources.anna,Properties.Resources.university,"University"),
+                new NovellaPage("MH - "+Setting.Name,Properties.Resources.MH,Properties.Resources.university,"University"),
+                new NovellaPage("Anna - Nice to meet you. Let me show you where your classroom is. I have a lecture nearby.",Properties.Resources.anna,Properties.Resources.university,"University"),
+                new NovellaPage("MH - Let’s go",Properties.Resources.MH,Properties.Resources.university,"University"),
+                new NovellaPage("Anna - Here is the classroom A398. So, bye bye.",Properties.Resources.anna,Properties.Resources.corridor,"Corridor"),
+                new NovellaPage("MH - Bye, bye! Thank you!",Properties.Resources.MH,Properties.Resources._class,"Class"),
+                new NovellaPage("MH - (She ran to her classroom so fast, I think she was already late when we met. At least she helped me)",Properties.Resources.MH,Properties.Resources._class,"Class"),
+                new NovellaPage("… … …",Properties.Resources.MH,Properties.Resources._class,"Class"),
+                new NovellaPage("MH - (First day and we have a lecture for about 4 hours. \nNow it has become soooo boring. Only after 2 hours is end)",Properties.Resources.MH,Properties.Resources._class,"Class"),
+                new NovellaPage("… … …",Properties.Resources.MH,Properties.Resources._class,"Class"),
+                new NovellaPage("Teacher - Now I am gonna explain you, some basics of C#. ",Properties.Resources.MH,Properties.Resources._class,"Class"),
+                new NovellaPage("Task: Calculating the sum of numbers\r\n\r\nYour friend is planning a party and decided to make it more interesting by holding a competition for \nthe most creative pair of numbers. \nHe wants to create a program that will allow participants to quickly find out the sum of any pair of numbers.\n You need to return 5",
+                Properties.Resources.computer,
+                "using System;\r\n return Sum(x, y);\r\n     \r\n public static int Sum(int x, int y)\r\n        {\r\n            return;\r\n}\r\n",
+                new Point(120,170), "Computer"),
+                new NovellaPage("MH - (Finally, a break! I need some caffeine.)",Properties.Resources.MH,Properties.Resources.corridor,"Corridor"),
+                new NovellaPage("...",Properties.Resources.MH,Properties.Resources.dining,"Caffeine"),
+                new NovellaPage($"David - Oh, Hi {Setting.Name}. Do you remember me? We studied in the same primary school. ",Properties.Resources.David,Properties.Resources.dining,"Caffeine"),
+                new NovellaPage("MH - Hi David! As you can see, I still remember you. What course did you enroll in?",Properties.Resources.MH,Properties.Resources.dining,"Caffeine"),
+                new NovellaPage("David - Informatic systems. And you? ",Properties.Resources.David,Properties.Resources.dining,"Caffeine"),
+            };
 
             novellaForm = new Form
             {
@@ -97,34 +181,6 @@ namespace visualnovella
 
             novellaForm.KeyPreview = true;
             novellaForm.KeyDown += Novella_KeyDown;
-            pages = new List<NovellaPage>
-            {
-                new NovellaPage("Monday","none"),
-                new NovellaPage("(No way, first day of new university and I’m late)",Properties.Resources.MH,Properties.Resources.university,"University"),
-                new NovellaPage("(Where is this classroom A398?)",Properties.Resources.MH,Properties.Resources.university,"University"),
-                new NovellaPage("Hi, you look lost. Don't know where your classroom is?",Properties.Resources.anna,Properties.Resources.university,"University"),
-                new NovellaPage("Hi, yep, I can’t find A398.",Properties.Resources.MH,Properties.Resources.university,"University"),
-                new NovellaPage("My name is Anna, what is your name?",Properties.Resources.anna,Properties.Resources.university,"University"),
-                new NovellaPage(Setting.Name,Properties.Resources.MH,Properties.Resources.university,"University"),
-                new NovellaPage("Nice to meet you. Let me show you where your classroom is. I have a lecture nearby.",Properties.Resources.anna,Properties.Resources.university,"University"),
-                new NovellaPage("Let’s go",Properties.Resources.MH,Properties.Resources.university,"University"),
-                new NovellaPage("Here is the classroom A398. So, bye bye.",Properties.Resources.anna,Properties.Resources.corridor,"Corridor"),
-                new NovellaPage("Bye, bye! Thank you!",Properties.Resources.MH,Properties.Resources._class,"Class"),
-                new NovellaPage("(She ran to her classroom so fast, I think she was already late when we met. At least she helped me)",Properties.Resources.MH,Properties.Resources._class,"Class"),
-                new NovellaPage("… … …",Properties.Resources.MH,Properties.Resources._class,"Class"),
-                new NovellaPage("(First day and we have a lecture for about 4 hours. \nNow it has become soooo boring. Only after 2 hours is end)",Properties.Resources.MH,Properties.Resources._class,"Class"),
-                new NovellaPage("… … …",Properties.Resources.MH,Properties.Resources._class,"Class"),
-                new NovellaPage("Now I am gonna explain you, some basics of C#. ",Properties.Resources.anna,Properties.Resources._class,"Class"),
-                new NovellaPage("Task: Calculating the sum of numbers\r\n\r\nYour friend is planning a party and decided to make it more interesting by holding a competition for \nthe most creative pair of numbers. \nHe wants to create a program that will allow participants to quickly find out the sum of any pair of numbers.\n You need to return 5",
-                Properties.Resources.computer,
-                "using System;\r\n return Sum(x, y);\r\n     \r\n public static int Sum(int x, int y)\r\n        {\r\n            return;\r\n}\r\n",
-                new Point(120,170), "Computer"),
-                new NovellaPage("(Finally, a break! I need some caffeine.)",Properties.Resources.MH,Properties.Resources.corridor,"Corridor"),
-                new NovellaPage("...",Properties.Resources.MH,Properties.Resources.dining,"Caffeine"),
-                new NovellaPage($"Oh, Hi {Setting.Name}. Do you remember me? We studied in the same primary school. ",Properties.Resources.David,Properties.Resources.dining,"Caffeine"),
-                new NovellaPage("Hi David! As you can see, I still remember you. What course did you enroll in?",Properties.Resources.MH,Properties.Resources.dining,"Caffeine"),
-                new NovellaPage("Informatic systems. And you? ",Properties.Resources.David,Properties.Resources.dining,"Caffeine"),
-            };
 
             #region Design and events
             characterImage.BackColor = Color.Transparent;
@@ -183,56 +239,25 @@ namespace visualnovella
                 item.MouseLeave += (s, e) => item.ForeColor = Color.Black;
             }
 
-            foreach (CustomUserControl item in new CustomUserControl[] { menuFrame, saveLoadFrame})
-            {
-                item.BorderColor = Color.Black;
-                item.BorderThickness = 3;
-                item.Opacity = 150;
-                item.Radius = 10;
-                item.TransparentBackColor = Color.Gray;
-                item.Size = new Size(400, 200);
-                item.Left = (ClientSize.Width - menuFrame.Width) / 2;
-                item.Top = (ClientSize.Height - menuFrame.Height) / 2;
-                item.MouseEnter += Menu_MouseEnter;
-                item.MouseLeave += Menu_MouseLeave;
-                item.VisibleChanged += Menu_VisibleChanged;
-            }
-
-            Button[] saves = new Button[] { save1, save2, save3 };
-            foreach (Button item in saves)
-            {
-                item.Size = new Size(saveLoadFrame.Width-50, saveLoadFrame.Height/4);
-                item.Font = new Font("Arial", 15, FontStyle.Bold, GraphicsUnit.Point, 204);
-                item.BackColor = Color.Gray;
-                item.Left = (saveLoadFrame.Width - item.Width) / 2;
-                item.Click += Save_Click;
-            }
-            string[] savesList = FileManage.GetFilesFromFolder();
-            for (int i = 0; i < 3; i++)
-            {
-                saves[i].Tag = i;
-                try
-                {
-                    saves[i].Text = savesList[i];
-                }
-                catch (Exception)
-                {
-                    saves[i].Text = "Empty";
-                }
-            }
-            save1.Top = 15;
-            save2.Top = 75;
-            save3.Top = 135;
-
             foreach (PictureBox item in new PictureBox[] { nextPage, nextPageWhite })
             {
                 item.BackColor = Color.Transparent;
                 item.SizeMode = PictureBoxSizeMode.StretchImage;
                 item.Size = new Size(30, 30);
-                item.Click += async(s, e) =>
+                item.Click += (s, e) =>
                 {
-                    await CreatePage(pages[++i]);
+                    CreatePage(pages[++i]);
                 };
+            }
+
+            foreach (CustomUserControl item in new CustomUserControl[] { menuFrame, saveLoadFrame })
+            {
+                item.MouseEnter += Menu_MouseEnter;
+                item.MouseLeave += Menu_MouseLeave;
+                item.VisibleChanged += Menu_VisibleChanged;
+                item.MouseEnter -= Menu_MouseEnter2;
+                item.MouseLeave -= Menu_MouseLeave2;
+                item.VisibleChanged -= Menu_VisibleChanged2;
             }
 
             nextPage.Location = new Point(dialogLabel.Width - 30, dialogLabel.Height - 30);
@@ -273,38 +298,52 @@ namespace visualnovella
 
             novellaForm.Show();
 
-            await CreatePage(pages[i]);
+            CreatePage(pages[i]);
         }
 
         private void Save_Click(object sender, EventArgs e)
         {
             Button save = sender as Button;
-            string saveName = pages[i].Location+DateTime.Now.Day+"-"+DateTime.Now.Month+"-"+DateTime.Now.Year+"_"+DateTime.Now.Hour+"-"+DateTime.Now.Minute;
-            FileManage.SerializeToFile(new SaveClass(i,Setting.Name,Setting.Gender),saveName);
-            save.Text = saveName;
+            if (action == "Save")
+            {
+                FileManage.ClearFiles(save.Tag.ToString());
+                string saveName = pages[i].Location + DateTime.Now.Day + "-" + DateTime.Now.Month + "-" + DateTime.Now.Year + "_" + DateTime.Now.Hour + "-" + DateTime.Now.Minute;
+                FileManage.SerializeToFile(new SaveClass(i, Setting.Name, Setting.Gender), save.Tag + "\\" + saveName);
+                save.Text = saveName;
+            }
+            else
+            {
+                SaveClass saved = FileManage.DeserializeFromFile<SaveClass>(save.Tag.ToString());
+                Setting.Name = saved.Name;
+                Setting.Gender = saved.Gender;
+                i = saved.PageNum;
+                this.Hide();
+                Game();
+            }
         }
-
         private void MenuSave_Click(object sender, EventArgs e)
         {
             saveLoadFrame.Visible = true;
             Label button = sender as Label;
             action = button.Text;
         }
-
         private void Menu_VisibleChanged(object sender, EventArgs e)
         {
             if (!menuFrame.Visible)
                 novellaForm.Click -= MenuFrameBack_Click;
         }
-
-        private async void PreviousPage_Click(object sender, EventArgs e)
+        private void Menu_VisibleChanged2(object sender, EventArgs e)
+        {
+            if (!menuFrame.Visible)
+                this.Click -= MenuFrameBack_Click2;
+        }
+        private void PreviousPage_Click(object sender, EventArgs e)
         {
             if ((i - 1) >= 0)
             {
-                await CreatePage(pages[--i]);
+                CreatePage(pages[--i]);
             }
         }
-
         private void Menu_MouseLeave(object sender, EventArgs e) => novellaForm.Click += MenuFrameBack_Click;
 
         private void Menu_MouseEnter(object sender, EventArgs e) => novellaForm.Click -= MenuFrameBack_Click;
@@ -314,21 +353,31 @@ namespace visualnovella
             menuFrame.Visible = !menuFrame.Visible;
             if (saveLoadFrame.Visible)
                 saveLoadFrame.Visible = false;
-        } 
-        private async void Novella_KeyDown(object sender, KeyEventArgs e)
+        }
+
+        private void Menu_MouseLeave2(object sender, EventArgs e) => this.Click += MenuFrameBack_Click2;
+
+        private void Menu_MouseEnter2(object sender, EventArgs e) => this.Click -= MenuFrameBack_Click2;
+
+        private void MenuFrameBack_Click2(object sender, EventArgs e)
+        {
+            if (saveLoadFrame.Visible)
+                saveLoadFrame.Visible = false;
+        }
+        private void Novella_KeyDown(object sender, KeyEventArgs e)
         {
             switch (e.KeyCode)
             {
                 case Keys.Right:
-                    await CreatePage(pages[++i]);
+                    CreatePage(pages[++i]);
                     break;
                 case Keys.Space:
-                    await CreatePage(pages[++i]);
+                    CreatePage(pages[++i]);
                     break;
                 case Keys.Left:
                     if ((i-1) >= 0)
                     {
-                        await CreatePage(pages[--i]);
+                        CreatePage(pages[--i]);
                     }
                     break;
                 case Keys.Escape:
@@ -364,9 +413,8 @@ namespace visualnovella
             }
         }
 
-        private async Task CreatePage(NovellaPage page)
+        private void CreatePage(NovellaPage page)
         {
-            await Task.Delay(0);
             codeEditor.Enabled = false;
             Invisibility(labelTitle, codeEditor, dialogLabel, characterImage, nextPageWhite, previousPageWhite, menuFrame, saveLoadFrame);
             if (page.PageType == PageType.Code || page.PageType == PageType.Text)

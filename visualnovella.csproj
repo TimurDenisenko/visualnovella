@@ -218,7 +218,9 @@
     <None Include="Resources\keyboard-typing-5997.mp3" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Saves\" />
+    <Folder Include="Saves\0\" />
+    <Folder Include="Saves\1\" />
+    <Folder Include="Saves\2\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\Library.jpg" />

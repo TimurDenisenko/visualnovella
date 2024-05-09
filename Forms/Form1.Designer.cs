@@ -83,6 +83,7 @@
             this._continue.Text = "Continue";
             this._continue.TransparentBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(124)))), ((int)(((byte)(32)))), ((int)(((byte)(58)))));
             this._continue.UseVisualStyleBackColor = true;
+            this._continue.Click += new System.EventHandler(this._continue_Click);
             // 
             // newgame
             // 
