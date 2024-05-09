@@ -5,6 +5,7 @@ namespace visualnovella
     {
         Text,
         Code,
-        Option
+        Option,
+        Empty
     }
 }
