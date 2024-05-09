@@ -109,5 +109,15 @@ namespace visualnovella.Properties {
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
+        
+        /// <summary>
+        ///   Поиск локализованного ресурса типа System.Byte[].
+        /// </summary>
+        internal static byte[] typing {
+            get {
+                object obj = ResourceManager.GetObject("typing", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
     }
 }

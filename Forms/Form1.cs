@@ -5,8 +5,8 @@ using System.Windows.Forms;
 using System.Collections.Generic;
 using Microsoft.CodeAnalysis.CSharp.Scripting;
 using Microsoft.CodeAnalysis.Scripting;
-using Microsoft.CodeAnalysis;
 using System.Reflection;
+using visualnovella.Classes;
 
 namespace visualnovella
 {
@@ -20,6 +20,7 @@ namespace visualnovella
         private Form novellaForm;
         private CustomUserControl menuFrame;
         private Label buttonMainMenu, buttonSave, buttonLoad, buttonClose, labelTitle;
+        private Sound effect;
         public Form1()
         {
             InitializeComponent();
@@ -80,6 +81,7 @@ namespace visualnovella
             nextPageWhite = new PictureBox();
             previousPageWhite = new PictureBox();
             dialogLabel = new CustomLabel { Controls = { nextPage, previousPage} };
+            effect = new Sound();
             #endregion
 
             novellaForm = new Form
@@ -295,11 +297,13 @@ namespace visualnovella
                 characterImage.Size = new Size(246, 365);
                 dialogLabel.Size = new Size(700, 100);
                 dialogLabel.Text = string.Empty;
+                effect.Play(Properties.Resources.typing);
                 foreach (char item in page.Dialog)
                 {
                     dialogLabel.Text += item;
                     await Task.Delay(20);
                 }
+                effect.Stop();
                 novellaForm.BackgroundImage = page.Background;
                 novellaForm.BackColor = DefaultBackColor;
             }
