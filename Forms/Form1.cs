@@ -18,9 +18,11 @@ namespace visualnovella
         private CustomLabel dialogLabel;
         private TextBox codeEditor;
         private Form novellaForm;
-        private CustomUserControl menuFrame;
+        private CustomUserControl menuFrame, saveLoadFrame;
         private Label buttonMainMenu, buttonSave, buttonLoad, buttonClose, labelTitle;
         private Sound effect;
+        private Button save1, save2, save3;
+        private string action;
         public Form1()
         {
             InitializeComponent();
@@ -82,19 +84,23 @@ namespace visualnovella
             previousPageWhite = new PictureBox();
             dialogLabel = new CustomLabel { Controls = { nextPage, previousPage} };
             effect = new Sound();
+            save1 = new Button();
+            save2 = new Button();
+            save3 = new Button();
+            saveLoadFrame = new CustomUserControl { Controls = { save1,save2,save3} };
             #endregion
 
             novellaForm = new Form
             {
-                Controls = { menuFrame,codeEditor, dialogLabel, characterImage, menu, labelTitle, nextPageWhite, previousPageWhite }
+                Controls = { saveLoadFrame,menuFrame,codeEditor, dialogLabel, characterImage, menu, labelTitle, nextPageWhite, previousPageWhite }
             };
 
             pages = new List<NovellaPage>
             {
-                new NovellaPage("Monday"),
-                new NovellaPage(Setting.Name,Properties.Resources.girl,Properties.Resources.back),
-                new NovellaPage(Setting.Gender.ToString(),Properties.Resources.girl,Properties.Resources.back),
-                new NovellaPage("You need to work",Properties.Resources.girl,Properties.Resources.back,"return 5;",new Point(0,0)),
+                new NovellaPage("Monday","none"),
+                new NovellaPage(Setting.Name,Properties.Resources.girl,Properties.Resources.back,"University"),
+                new NovellaPage(Setting.Gender.ToString(),Properties.Resources.girl,Properties.Resources.back,"University"),
+                new NovellaPage("You need to work",Properties.Resources.girl,Properties.Resources.back,"return 5;",new Point(0,0),"University"),
             };
 
             #region Design and events
@@ -136,12 +142,14 @@ namespace visualnovella
 
             buttonSave.Text = "Save";
             buttonSave.Location = new Point((420 - buttonSave.Width) / 2, 70);
+            buttonSave.Click += MenuSave_Click;
             //добавить метод для сериализации в JSON (int i, string Name, Gender Gender)
             //сохранять с следующим текстом: {Локация}, {дата} {время}
             //3 поля сохранения
 
             buttonLoad.Text = "Load";
             buttonLoad.Location = new Point((420 - buttonLoad.Width) / 2, 110);
+            buttonLoad.Click += MenuSave_Click;
             //выбор 1 из 3 полей сохранения
 
             buttonClose.Text = "Close";
@@ -156,17 +164,46 @@ namespace visualnovella
                 item.MouseLeave += (s, e) => item.ForeColor = Color.Black;
             }
 
-            menuFrame.BorderColor = Color.Black;
-            menuFrame.BorderThickness = 3;
-            menuFrame.Opacity = 150;
-            menuFrame.Radius = 10;
-            menuFrame.TransparentBackColor = Color.Gray;
-            menuFrame.Size = new Size(400, 200);
-            menuFrame.Left = (ClientSize.Width - menuFrame.Width) / 2;
-            menuFrame.Top = (ClientSize.Height - menuFrame.Height) / 2;
-            menuFrame.MouseEnter += MenuFrame_MouseEnter;
-            menuFrame.MouseLeave += MenuFrame_MouseLeave;
-            menuFrame.VisibleChanged += MenuFrame_VisibleChanged;
+            foreach (CustomUserControl item in new CustomUserControl[] { menuFrame, saveLoadFrame})
+            {
+                item.BorderColor = Color.Black;
+                item.BorderThickness = 3;
+                item.Opacity = 150;
+                item.Radius = 10;
+                item.TransparentBackColor = Color.Gray;
+                item.Size = new Size(400, 200);
+                item.Left = (ClientSize.Width - menuFrame.Width) / 2;
+                item.Top = (ClientSize.Height - menuFrame.Height) / 2;
+                item.MouseEnter += Menu_MouseEnter;
+                item.MouseLeave += Menu_MouseLeave;
+                item.VisibleChanged += Menu_VisibleChanged;
+            }
+
+            Button[] saves = new Button[] { save1, save2, save3 };
+            foreach (Button item in saves)
+            {
+                item.Size = new Size(saveLoadFrame.Width-50, saveLoadFrame.Height/4);
+                item.Font = new Font("Arial", 15, FontStyle.Bold, GraphicsUnit.Point, 204);
+                item.BackColor = Color.Gray;
+                item.Left = (saveLoadFrame.Width - item.Width) / 2;
+                item.Click += Save_Click;
+            }
+            string[] savesList = FileManage.GetFilesFromFolder();
+            for (int i = 0; i < 3; i++)
+            {
+                saves[i].Tag = i;
+                try
+                {
+                    saves[i].Text = savesList[i];
+                }
+                catch (Exception)
+                {
+                    saves[i].Text = "Empty";
+                }
+            }
+            save1.Top = 15;
+            save2.Top = 75;
+            save3.Top = 135;
 
             foreach (PictureBox item in new PictureBox[] { nextPage, nextPageWhite })
             {
@@ -215,7 +252,22 @@ namespace visualnovella
             CreatePage(pages[i]);
         }
 
-        private void MenuFrame_VisibleChanged(object sender, EventArgs e)
+        private void Save_Click(object sender, EventArgs e)
+        {
+            Button save = sender as Button;
+            string saveName = pages[i].Location+DateTime.Now.Day+"-"+DateTime.Now.Month+"-"+DateTime.Now.Year+"_"+DateTime.Now.Hour+"-"+DateTime.Now.Minute;
+            FileManage.SerializeToFile(new SaveClass(i,Setting.Name,Setting.Gender),saveName);
+            save.Text = saveName;
+        }
+
+        private void MenuSave_Click(object sender, EventArgs e)
+        {
+            saveLoadFrame.Visible = true;
+            Label button = sender as Label;
+            action = button.Text;
+        }
+
+        private void Menu_VisibleChanged(object sender, EventArgs e)
         {
             if (!menuFrame.Visible)
                 novellaForm.Click -= MenuFrameBack_Click;
@@ -227,11 +279,16 @@ namespace visualnovella
                 CreatePage(pages[--i]);
         }
 
-        private void MenuFrame_MouseLeave(object sender, EventArgs e) => novellaForm.Click += MenuFrameBack_Click;
+        private void Menu_MouseLeave(object sender, EventArgs e) => novellaForm.Click += MenuFrameBack_Click;
 
-        private void MenuFrame_MouseEnter(object sender, EventArgs e) => novellaForm.Click -= MenuFrameBack_Click;
+        private void Menu_MouseEnter(object sender, EventArgs e) => novellaForm.Click -= MenuFrameBack_Click;
 
-        private void MenuFrameBack_Click(object sender, EventArgs e) => menuFrame.Visible = !menuFrame.Visible;
+        private void MenuFrameBack_Click(object sender, EventArgs e) 
+        {
+            menuFrame.Visible = !menuFrame.Visible;
+            if (saveLoadFrame.Visible)
+                saveLoadFrame.Visible = false;
+        } 
         private void Novella_KeyDown(object sender, KeyEventArgs e)
         {
             switch (e.KeyCode)
@@ -248,6 +305,8 @@ namespace visualnovella
                     break;
                 case Keys.Escape:
                     menuFrame.Visible = !menuFrame.Visible;
+                    if (saveLoadFrame.Visible)
+                        saveLoadFrame.Visible = false;
                     break;
                 default:
                     break;
@@ -280,7 +339,7 @@ namespace visualnovella
         private async void CreatePage(NovellaPage page)
         {
             codeEditor.Enabled = false;
-            Invisibility(labelTitle, codeEditor, dialogLabel, characterImage, nextPageWhite, previousPageWhite, menuFrame);
+            Invisibility(labelTitle, codeEditor, dialogLabel, characterImage, nextPageWhite, previousPageWhite, menuFrame, saveLoadFrame);
             if (page.PageType == PageType.Code || page.PageType == PageType.Text)
             {
                 if (page.PageType == PageType.Code)
