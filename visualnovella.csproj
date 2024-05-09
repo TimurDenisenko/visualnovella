@@ -220,5 +220,44 @@
   <ItemGroup>
     <Folder Include="Saves\" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Library.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\koridor.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\MH.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\MH.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\corridor.jpeg" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\class.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\dining.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\David.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\computer.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\music2.mp3" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\music3.mp3" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\music4.mp3" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\music1.mp3" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

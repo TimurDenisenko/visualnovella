@@ -22,10 +22,9 @@ namespace visualnovella
             PageType = PageType.Text;
             Location = location;
         }
-        public NovellaPage(string dialog, Bitmap person, Bitmap background, string code, Point codeEditorLocation, string location)
+        public NovellaPage(string dialog, Bitmap background, string code, Point codeEditorLocation, string location)
         {
             Dialog = dialog;
-            Person = person;
             Background = background;
             Code = code;
             CodeEditorLocation = codeEditorLocation;

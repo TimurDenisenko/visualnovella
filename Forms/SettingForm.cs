@@ -40,6 +40,7 @@ namespace visualnovella
                 return;
             }
             Setting.Name = customTextBox1.Text;
+            customTextBox1.Enabled = false;
             Close();
         }
     }

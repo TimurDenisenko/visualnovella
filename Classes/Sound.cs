@@ -15,7 +15,7 @@ namespace visualnovella.Classes
         {
             while (i != 0)
             {
-                foreach (var item in new List<byte[]> {  })
+                foreach (var item in new List<byte[]> { Properties.Resources.music1, Properties.Resources.music2, Properties.Resources.music3, Properties.Resources.music4 })
                 {
                     if (i == 0)
                         break;
