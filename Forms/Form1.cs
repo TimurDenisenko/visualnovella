@@ -7,13 +7,14 @@ using Microsoft.CodeAnalysis.CSharp.Scripting;
 using Microsoft.CodeAnalysis.Scripting;
 using System.Reflection;
 using visualnovella.Classes;
+using System.Linq;
 
 namespace visualnovella
 {
     public partial class Form1 : Form
     {
-        private List<NovellaPage> pages;
-        private int i;
+        private int i = -1;
+        private bool back;
         private PictureBox characterImage, menu, nextPage, previousPage, nextPageWhite, previousPageWhite;
         private CustomLabel dialogLabel;
         private TextBox codeEditor;
@@ -23,6 +24,7 @@ namespace visualnovella
         private Sound effect, music;
         private Button save1, save2, save3;
         private string action;
+        private string[] scenario;
         public Form1()
         {
             InitializeComponent();
@@ -64,7 +66,7 @@ namespace visualnovella
             }
             for (int i = 0; i < 3; i++)
             {
-                string[] savesList = FileManage.GetFilesFromFolder(FileManage.path + "\\" + i);
+                string[] savesList = FileManage.GetFilesFromFolder(FileManage.pathForSave + "\\" + i);
                 saves[i].Tag = i;
                 try
                 {
@@ -142,37 +144,10 @@ namespace visualnovella
             previousPageWhite = new PictureBox();
             dialogLabel = new CustomLabel { Controls = { nextPage, previousPage } };
             effect = new Sound();
+            scenario = FileManage.ReadFromFile();
             #endregion
 
 
-            pages = new List<NovellaPage>
-            {
-                new NovellaPage("Monday","none"),
-                new NovellaPage("MH - (No way, first day of new university and I’m late)",Properties.Resources.MH,Properties.Resources.university,"University"),
-                new NovellaPage("MH - (Where is this classroom A398?)",Properties.Resources.MH,Properties.Resources.university,"University"),
-                new NovellaPage("Anna - Hi, you look lost. Don't know where your classroom is?",Properties.Resources.anna,Properties.Resources.university,"University"),
-                new NovellaPage("MH - Hi, yep, I can’t find A398.",Properties.Resources.MH,Properties.Resources.university,"University"),
-                new NovellaPage("Anna - My name is Anna, what is your name?",Properties.Resources.anna,Properties.Resources.university,"University"),
-                new NovellaPage("MH - "+Setting.Name,Properties.Resources.MH,Properties.Resources.university,"University"),
-                new NovellaPage("Anna - Nice to meet you. Let me show you where your classroom is. I have a lecture nearby.",Properties.Resources.anna,Properties.Resources.university,"University"),
-                new NovellaPage("MH - Let’s go",Properties.Resources.MH,Properties.Resources.university,"University"),
-                new NovellaPage("Anna - Here is the classroom A398. So, bye bye.",Properties.Resources.anna,Properties.Resources.corridor,"Corridor"),
-                new NovellaPage("MH - Bye, bye! Thank you!",Properties.Resources.MH,Properties.Resources._class,"Class"),
-                new NovellaPage("MH - (She ran to her classroom so fast, I think she was already late when we met. At least she helped me)",Properties.Resources.MH,Properties.Resources._class,"Class"),
-                new NovellaPage("… … …",Properties.Resources.MH,Properties.Resources._class,"Class"),
-                new NovellaPage("MH - (First day and we have a lecture for about 4 hours. \nNow it has become soooo boring. Only after 2 hours is end)",Properties.Resources.MH,Properties.Resources._class,"Class"),
-                new NovellaPage("… … …",Properties.Resources.MH,Properties.Resources._class,"Class"),
-                new NovellaPage("Teacher - Now I am gonna explain you, some basics of C#. ",Properties.Resources.MH,Properties.Resources._class,"Class"),
-                new NovellaPage("Task: Calculating the sum of numbers\r\n\r\nYour friend is planning a party and decided to make it more interesting by holding a competition for \nthe most creative pair of numbers. \nHe wants to create a program that will allow participants to quickly find out the sum of any pair of numbers.\n You need to return 5",
-                Properties.Resources.computer,
-                "using System;\r\n return Sum(x, y);\r\n     \r\n public static int Sum(int x, int y)\r\n        {\r\n            return;\r\n}\r\n",
-                new Point(120,170), "Computer"),
-                new NovellaPage("MH - (Finally, a break! I need some caffeine.)",Properties.Resources.MH,Properties.Resources.corridor,"Corridor"),
-                new NovellaPage("...",Properties.Resources.MH,Properties.Resources.dining,"Caffeine"),
-                new NovellaPage($"David - Oh, Hi {Setting.Name}. Do you remember me? We studied in the same primary school. ",Properties.Resources.David,Properties.Resources.dining,"Caffeine"),
-                new NovellaPage("MH - Hi David! As you can see, I still remember you. What course did you enroll in?",Properties.Resources.MH,Properties.Resources.dining,"Caffeine"),
-                new NovellaPage("David - Informatic systems. And you? ",Properties.Resources.David,Properties.Resources.dining,"Caffeine"),
-            };
 
             novellaForm = new Form
             {
@@ -196,6 +171,15 @@ namespace visualnovella
             dialogLabel.Padding = new Padding(15, 15, 0, 0);
             dialogLabel.Radius = 10;
             dialogLabel.TransparentBackColor = Color.White;
+
+            characterImage.Location = new Point(49, 83);
+            characterImage.Size = new Size(246, 365);
+            characterImage.Visible = true;
+
+            dialogLabel.Visible = true;
+            dialogLabel.Size = new Size(700, 100);
+
+            novellaForm.BackColor = DefaultBackColor;
 
             codeEditor.Multiline = true;
             codeEditor.TabStop = false;
@@ -246,7 +230,7 @@ namespace visualnovella
                 item.Size = new Size(30, 30);
                 item.Click += (s, e) =>
                 {
-                    CreatePage(pages[++i]);
+                    GoForward();
                 };
             }
 
@@ -295,10 +279,10 @@ namespace visualnovella
             music = new Sound();
             music.Music();
             #endregion
-
+            Invisibility(labelTitle, codeEditor, nextPageWhite, previousPageWhite, menuFrame, saveLoadFrame);
             novellaForm.Show();
-
-            CreatePage(pages[i]);
+            GoForward();
+            GoForward();
         }
 
         private void Save_Click(object sender, EventArgs e)
@@ -307,7 +291,7 @@ namespace visualnovella
             if (action == "Save")
             {
                 FileManage.ClearFiles(save.Tag.ToString());
-                string saveName = pages[i].Location + DateTime.Now.Day + "-" + DateTime.Now.Month + "-" + DateTime.Now.Year + "_" + DateTime.Now.Hour + "-" + DateTime.Now.Minute;
+                string saveName = NovellaScenario.CurrentLocation + DateTime.Now.Day + "-" + DateTime.Now.Month + "-" + DateTime.Now.Year + "_" + DateTime.Now.Hour + "-" + DateTime.Now.Minute;
                 FileManage.SerializeToFile(new SaveClass(i, Setting.Name, Setting.Gender), save.Tag + "\\" + saveName);
                 save.Text = saveName;
             }
@@ -341,7 +325,7 @@ namespace visualnovella
         {
             if ((i - 1) >= 0)
             {
-                CreatePage(pages[--i]);
+                GoForward();
             }
         }
         private void Menu_MouseLeave(object sender, EventArgs e) => novellaForm.Click += MenuFrameBack_Click;
@@ -369,15 +353,15 @@ namespace visualnovella
             switch (e.KeyCode)
             {
                 case Keys.Right:
-                    CreatePage(pages[++i]);
+                    GoForward();
                     break;
                 case Keys.Space:
-                    CreatePage(pages[++i]);
+                    GoForward();
                     break;
                 case Keys.Left:
                     if ((i-1) >= 0)
                     {
-                        CreatePage(pages[--i]);
+                        GoBack();
                     }
                     break;
                 case Keys.Escape:
@@ -412,44 +396,55 @@ namespace visualnovella
                     break;
             }
         }
-
-        private void CreatePage(NovellaPage page)
+        private void GoBack()
         {
-            codeEditor.Enabled = false;
-            Invisibility(labelTitle, codeEditor, dialogLabel, characterImage, nextPageWhite, previousPageWhite, menuFrame, saveLoadFrame);
-            if (page.PageType == PageType.Code || page.PageType == PageType.Text)
+            --i;
+            GeneratePage();
+        }
+        private void GoForward()
+        {
+            ++i;
+            GeneratePage();
+        }
+
+        private async void GeneratePage()
+        {
+            if (scenario[i].Trim() == "***")
             {
-                if (page.PageType == PageType.Code)
+                ++i;
+                string[] changes = scenario[i].Replace(" ", "").Split('|');
+                if (changes[0].Split(':')[0] == "Back")
                 {
-                    codeEditor.Enabled = true;
-                    codeEditor.Visible = true;
-                    codeEditor.Size = new Size(200, 200);
-                    codeEditor.Location = page.CodeEditorLocation;
-                    codeEditor.Text = page.Code;
+                    NovellaScenario.CurrentBackground = Properties.Resources.ResourceManager.GetObject(changes[0].Split(':')[1]) as Bitmap;
+                    NovellaScenario.CurrentLocation = changes[0].Split(':')[1];
+                    novellaForm.BackgroundImage = NovellaScenario.CurrentBackground;
                 }
                 else
                 {
-                    characterImage.Image = page.Person;
-                    characterImage.Location = new Point(49, 83);
-                    characterImage.Size = new Size(246, 365);
-                    characterImage.Visible = true;
+                    NovellaScenario.CurrentCharacter = Properties.Resources.ResourceManager.GetObject(changes[0].Split(':')[1]) as Bitmap;
+                    characterImage.Image = NovellaScenario.CurrentCharacter;
                 }
-                dialogLabel.Visible = true;
-                dialogLabel.Size = new Size(700, 100);
-                dialogLabel.Text = page.Dialog;
-                novellaForm.BackgroundImage = page.Background;
-                novellaForm.BackColor = DefaultBackColor;
+                if (changes.Length == 2)
+                {
+                    NovellaScenario.CurrentCharacter = Properties.Resources.ResourceManager.GetObject(changes[1].Split(':')[1]) as Bitmap;
+                    characterImage.Image = NovellaScenario.CurrentCharacter;
+                }
+                ++i;
+                return;
             }
-            else if (page.PageType == PageType.Empty)
+            else
             {
-                Visibility(labelTitle, nextPageWhite, previousPageWhite);
-                labelTitle.Text = page.Title;
-                labelTitle.Left = (ClientSize.Width - labelTitle.Width) / 2;
-                labelTitle.Top = (ClientSize.Height - labelTitle.Height) / 2;
-                novellaForm.BackColor = Color.Black;
-                novellaForm.BackgroundImage = null;
+                dialogLabel.Text = string.Empty;
+                if (scenario[i].Contains("[player]"))
+                    scenario[i] = scenario[i].Replace("[player]", Setting.Name);
+                foreach (char item in scenario[i])
+                {
+                    dialogLabel.Text += item;
+                    await Task.Delay(10);
+                }
             }
         }
+
         private void Visibility(params Control[] controls)
         {
             foreach (Control control in controls)

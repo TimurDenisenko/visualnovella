@@ -118,6 +118,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Classes\FileManage.cs" />
+    <Compile Include="Classes\NovellaScenario.cs" />
     <Compile Include="Classes\SaveClass.cs" />
     <Compile Include="Classes\Sound.cs" />
     <Compile Include="UserControls\CustomButton.cs">
@@ -260,6 +261,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\music1.mp3" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\scenario.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

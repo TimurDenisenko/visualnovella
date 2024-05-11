@@ -7,10 +7,11 @@ namespace visualnovella.Classes
 {
     public static class FileManage
     {
-        public static readonly string path = Environment.CurrentDirectory.Replace("bin\\Debug", "Saves");
+        public static readonly string pathForScenario = Environment.CurrentDirectory.Replace("bin\\Debug", "Resources/scenario.txt");
+        public static readonly string pathForSave = Environment.CurrentDirectory.Replace("bin\\Debug", "Saves");
         public static string[] GetFilesFromFolder(string specificPath = null)
         {
-            DirectoryInfo d = new DirectoryInfo(specificPath ?? path);
+            DirectoryInfo d = new DirectoryInfo(specificPath ?? pathForSave);
             FileInfo[] Files = d.GetFiles();
             foreach (FileInfo item in Files)
             {
@@ -20,21 +21,26 @@ namespace visualnovella.Classes
         }
         public static void ClearFiles(string num)
         {
-            foreach (string item in GetFilesFromFolder(path+"\\"+num))
+            foreach (string item in GetFilesFromFolder(pathForSave+"\\"+num))
             {
-                File.Delete(path + "\\" + num+"\\"+item);
+                File.Delete(pathForSave + "\\" + num+"\\"+item);
             }
         }
         public static void SerializeToFile<T>(T obj, string name)
         {
             string json = JsonConvert.SerializeObject(obj);
-            File.WriteAllText(path+"\\"+name, json);
+            File.WriteAllText(pathForSave+"\\"+name, json);
         }
         public static T DeserializeFromFile<T>(string num)
         {
-            string[] file = GetFilesFromFolder(path + "\\" + num);
-            string json = File.ReadAllText(path + "\\" + num+"\\"+file[0]);
+            string[] file = GetFilesFromFolder(pathForSave + "\\" + num);
+            string json = File.ReadAllText(pathForSave + "\\" + num+"\\"+file[0]);
             return JsonConvert.DeserializeObject<T>(json);
+        }
+        public static string[] ReadFromFile()
+        { 
+            string[] scenario = File.ReadAllLines(pathForScenario);
+            return scenario;
         }
     }
 }

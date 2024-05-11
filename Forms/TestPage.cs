@@ -12,7 +12,7 @@ namespace visualnovella
             pictureBox1 = new PictureBox();
             customLabel1 = new CustomLabel();
             pictureBox1.BackColor = Color.Transparent;
-            pictureBox1.Image = Properties.Resources.anna;
+            pictureBox1.Image = Properties.Resources.Anna;
             pictureBox1.Location = new Point(49, 83);
             pictureBox1.Size = new Size(246, 365);
             pictureBox1.SizeMode = PictureBoxSizeMode.StretchImage;
@@ -28,7 +28,7 @@ namespace visualnovella
             customLabel1.Size = new Size(700, 100);
             customLabel1.Text = Setting.Gender+" "+Setting.Name;
             customLabel1.TransparentBackColor = Color.White;
-            BackgroundImage = Properties.Resources.university;
+            BackgroundImage = Properties.Resources.University;
             ClientSize = new Size(752, 473);
             Controls.Add(customLabel1);
             Controls.Add(pictureBox1);
