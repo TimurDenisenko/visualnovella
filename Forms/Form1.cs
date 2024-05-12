@@ -432,6 +432,10 @@ namespace visualnovella
                 ++i;
                 return;
             }
+            else if (scenario[i].Trim() == "****")
+            {
+
+            }
             else
             {
                 dialogLabel.Text = string.Empty;
