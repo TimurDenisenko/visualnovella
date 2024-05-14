@@ -2,7 +2,6 @@
 using System.Drawing;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using System.Collections.Generic;
 using Microsoft.CodeAnalysis.CSharp.Scripting;
 using Microsoft.CodeAnalysis.Scripting;
 using System.Reflection;
@@ -14,7 +13,6 @@ namespace visualnovella
     public partial class Form1 : Form
     {
         private int i = -1;
-        private bool back;
         private PictureBox characterImage, menu, nextPage, previousPage, nextPageWhite, previousPageWhite;
         private CustomLabel dialogLabel;
         private TextBox codeEditor;
@@ -39,7 +37,7 @@ namespace visualnovella
             save2 = new Button();
             save3 = new Button();
             saveLoadFrame = new CustomUserControl { Controls = { save1, save2, save3 }, Visible = false, };
-            menuFrame = new CustomUserControl { };
+            menuFrame = new CustomUserControl { Visible = false, };
             foreach (CustomUserControl item in new CustomUserControl[] { menuFrame, saveLoadFrame })
             {
                 item.BorderColor = Color.Black;
@@ -81,6 +79,7 @@ namespace visualnovella
             save2.Top = 75;
             save3.Top = 135;
 
+            Controls.Add(menuFrame);
             Controls.Add(saveLoadFrame);
             newgame.SendToBack();
             _continue.SendToBack();
@@ -127,16 +126,17 @@ namespace visualnovella
 
         private void Game()
         {
-            #region Declaration of variables
             characterImage = new PictureBox();
             codeEditor = new TextBox();
             menu = new PictureBox();
-            menuFrame = new CustomUserControl();
-            buttonMainMenu = new Label();
+            buttonMainMenu = new Label() { Visible = true};
             buttonSave = new Label();
             buttonLoad = new Label();
             buttonClose = new Label();
-            menuFrame.Controls.AddRange(new Label[] { buttonMainMenu, buttonSave, buttonLoad, buttonClose });
+            menuFrame.Controls.Add(buttonMainMenu);
+            menuFrame.Controls.Add(buttonSave);
+            menuFrame.Controls.Add(buttonLoad);
+            menuFrame.Controls.Add(buttonClose);
             nextPage = new PictureBox();
             previousPage = new PictureBox();
             labelTitle = new Label();
@@ -145,9 +145,6 @@ namespace visualnovella
             dialogLabel = new CustomLabel { Controls = { nextPage, previousPage } };
             effect = new Sound();
             scenario = FileManage.ReadFromFile();
-            #endregion
-
-
 
             novellaForm = new Form
             {
@@ -157,7 +154,6 @@ namespace visualnovella
             novellaForm.KeyPreview = true;
             novellaForm.KeyDown += Novella_KeyDown;
 
-            #region Design and events
             characterImage.BackColor = Color.Transparent;
             characterImage.SizeMode = PictureBoxSizeMode.StretchImage;
 
@@ -197,7 +193,7 @@ namespace visualnovella
             menu.Image = Properties.Resources.menu;
             menu.SizeMode = PictureBoxSizeMode.StretchImage;
             menu.Size = new Size(50, 50);
-            menu.Click += (s, e) => menuFrame.Visible = true;
+            menu.Click += (s, e) => Visibility(menuFrame, buttonMainMenu, buttonSave, buttonLoad, buttonClose);
 
             buttonMainMenu.Text = "Main screen";
             buttonMainMenu.Location = new Point((360 - buttonMainMenu.Width) / 2, 30);
@@ -278,10 +274,9 @@ namespace visualnovella
 
             music = new Sound();
             music.Music();
-            #endregion
-            Invisibility(labelTitle, codeEditor, nextPageWhite, previousPageWhite, menuFrame, saveLoadFrame);
+
+            Invisibility(labelTitle, codeEditor, nextPageWhite, previousPageWhite, saveLoadFrame);
             novellaForm.Show();
-            GoForward();
             GoForward();
         }
 
@@ -298,15 +293,21 @@ namespace visualnovella
             else
             {
                 SaveClass saved = FileManage.DeserializeFromFile<SaveClass>(save.Tag.ToString());
-                Setting.Name = saved.Name;
-                Setting.Gender = saved.Gender;
-                i = saved.PageNum;
-                this.Hide();
-                Game();
+                if (saved != null)
+                {
+                    Setting.Name = saved.Name;
+                    Setting.Gender = saved.Gender;
+                    i = saved.PageNum;
+                    this.Hide();
+                    Game();
+                }
+                else
+                    newgame_Click(sender, e);
             }
         }
         private void MenuSave_Click(object sender, EventArgs e)
         {
+            menuFrame.Visible = false;
             saveLoadFrame.Visible = true;
             Label button = sender as Label;
             action = button.Text;
@@ -328,6 +329,12 @@ namespace visualnovella
                 GoForward();
             }
         }
+
+        private void setting_button_Click(object sender, EventArgs e)
+        {
+
+        }
+
         private void Menu_MouseLeave(object sender, EventArgs e) => novellaForm.Click += MenuFrameBack_Click;
 
         private void Menu_MouseEnter(object sender, EventArgs e) => novellaForm.Click -= MenuFrameBack_Click;
@@ -409,11 +416,22 @@ namespace visualnovella
 
         private async void GeneratePage()
         {
-            if (scenario[i].Trim() == "***")
+            Enum.TryParse(scenario[i].Trim(), out LineType currentLine);
+            if (currentLine == LineType.Empty)
+            {
+                Invisibility(characterImage, codeEditor, dialogLabel, nextPage, previousPage);
+                Visibility(labelTitle, nextPageWhite, previousPageWhite);
+            }
+            else
+            {
+                Visibility(characterImage, dialogLabel, nextPage, previousPage);
+                Invisibility(labelTitle, nextPageWhite, previousPageWhite);
+            }
+            if (currentLine == LineType.Setting)
             {
                 ++i;
                 string[] changes = scenario[i].Replace(" ", "").Split('|');
-                if (changes[0].Split(':')[0] == "Back")
+                if (currentLine == LineType.Setting)
                 {
                     NovellaScenario.CurrentBackground = Properties.Resources.ResourceManager.GetObject(changes[0].Split(':')[1]) as Bitmap;
                     NovellaScenario.CurrentLocation = changes[0].Split(':')[1];
@@ -430,9 +448,19 @@ namespace visualnovella
                     characterImage.Image = NovellaScenario.CurrentCharacter;
                 }
                 ++i;
-                return;
+                GoForward();
             }
-            else if (scenario[i].Trim() == "****")
+            else if (currentLine == LineType.Empty)
+            {
+                ++i;
+                labelTitle.Text = scenario[i];
+                labelTitle.Left = (ClientSize.Width - labelTitle.Width) / 2;
+                labelTitle.Top = (ClientSize.Height - labelTitle.Height) / 2;
+                novellaForm.BackColor = Color.Black;
+                novellaForm.BackgroundImage = null;
+                NovellaScenario.CurrentLocation = "none";
+            }
+            else if (currentLine == LineType.Code)
             {
 
             }
@@ -441,27 +469,18 @@ namespace visualnovella
                 dialogLabel.Text = string.Empty;
                 if (scenario[i].Contains("[player]"))
                     scenario[i] = scenario[i].Replace("[player]", Setting.Name);
+                Invisibility(nextPage, previousPage);
+                novellaForm.KeyDown -= Novella_KeyDown;
                 foreach (char item in scenario[i])
                 {
                     dialogLabel.Text += item;
                     await Task.Delay(10);
                 }
+                Visibility(nextPage, previousPage);
+                novellaForm.KeyDown += Novella_KeyDown;
             }
         }
-
-        private void Visibility(params Control[] controls)
-        {
-            foreach (Control control in controls)
-            {
-                control.Visible = true;
-            }
-        }
-        private void Invisibility(params Control[] controls)
-        {
-            foreach (Control control in controls)
-            {
-                control.Visible = false;
-            }
-        }
+        private void Visibility(params Control[] controls) => Array.ForEach(controls, x => x.Visible = true);
+        private void Invisibility(params Control[] controls) => Array.ForEach(controls,x => x.Visible = false);
     }
 }

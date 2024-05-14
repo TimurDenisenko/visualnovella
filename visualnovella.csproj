@@ -120,7 +120,6 @@
     <Compile Include="Classes\FileManage.cs" />
     <Compile Include="Classes\NovellaScenario.cs" />
     <Compile Include="Classes\SaveClass.cs" />
-    <Compile Include="Classes\Scenario.cs" />
     <Compile Include="Classes\Sound.cs" />
     <Compile Include="UserControls\CustomButton.cs">
       <SubType>Component</SubType>
@@ -141,8 +140,7 @@
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
     <Compile Include="Classes\Gender.cs" />
-    <Compile Include="Classes\NovellaPage.cs" />
-    <Compile Include="Classes\PageType.cs" />
+    <Compile Include="Classes\LineType.cs" />
     <Compile Include="Forms\Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Classes\Setting.cs" />

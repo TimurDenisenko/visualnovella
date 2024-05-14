@@ -34,6 +34,7 @@ namespace visualnovella.Classes
         public static T DeserializeFromFile<T>(string num)
         {
             string[] file = GetFilesFromFolder(pathForSave + "\\" + num);
+            if (file.Length == 0) return default;
             string json = File.ReadAllText(pathForSave + "\\" + num+"\\"+file[0]);
             return JsonConvert.DeserializeObject<T>(json);
         }

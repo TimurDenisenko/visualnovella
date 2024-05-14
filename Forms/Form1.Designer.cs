@@ -33,6 +33,7 @@
             this.exit = new visualnovella.CustomButton();
             this._continue = new visualnovella.CustomButton();
             this.newgame = new visualnovella.CustomButton();
+            this.setting_button = new visualnovella.CustomButton();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
             // 
@@ -55,7 +56,7 @@
             this.exit.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.exit.Font = new System.Drawing.Font("Microsoft Sans Serif", 15F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.exit.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(159)))), ((int)(((byte)(104)))));
-            this.exit.Location = new System.Drawing.Point(309, 346);
+            this.exit.Location = new System.Drawing.Point(414, 306);
             this.exit.Name = "exit";
             this.exit.Opacity = 210;
             this.exit.Radius = 15;
@@ -74,7 +75,7 @@
             this._continue.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this._continue.Font = new System.Drawing.Font("Microsoft Sans Serif", 15F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this._continue.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(159)))), ((int)(((byte)(104)))));
-            this._continue.Location = new System.Drawing.Point(309, 266);
+            this._continue.Location = new System.Drawing.Point(414, 220);
             this._continue.Name = "_continue";
             this._continue.Opacity = 210;
             this._continue.Radius = 15;
@@ -93,7 +94,7 @@
             this.newgame.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.newgame.Font = new System.Drawing.Font("Microsoft Sans Serif", 15F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.newgame.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(159)))), ((int)(((byte)(104)))));
-            this.newgame.Location = new System.Drawing.Point(309, 189);
+            this.newgame.Location = new System.Drawing.Point(213, 220);
             this.newgame.Name = "newgame";
             this.newgame.Opacity = 210;
             this.newgame.Radius = 15;
@@ -104,12 +105,32 @@
             this.newgame.UseVisualStyleBackColor = true;
             this.newgame.Click += new System.EventHandler(this.newgame_Click);
             // 
+            // setting_button
+            // 
+            this.setting_button.BackColor = System.Drawing.Color.Transparent;
+            this.setting_button.BorderColor = System.Drawing.Color.Black;
+            this.setting_button.BorderThickness = 2;
+            this.setting_button.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.setting_button.Font = new System.Drawing.Font("Microsoft Sans Serif", 15F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.setting_button.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(159)))), ((int)(((byte)(104)))));
+            this.setting_button.Location = new System.Drawing.Point(213, 306);
+            this.setting_button.Name = "setting_button";
+            this.setting_button.Opacity = 210;
+            this.setting_button.Radius = 15;
+            this.setting_button.Size = new System.Drawing.Size(150, 49);
+            this.setting_button.TabIndex = 5;
+            this.setting_button.Text = "Settings";
+            this.setting_button.TransparentBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(124)))), ((int)(((byte)(32)))), ((int)(((byte)(58)))));
+            this.setting_button.UseVisualStyleBackColor = true;
+            this.setting_button.Click += new System.EventHandler(this.setting_button_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("$this.BackgroundImage")));
             this.ClientSize = new System.Drawing.Size(752, 473);
+            this.Controls.Add(this.setting_button);
             this.Controls.Add(this.exit);
             this.Controls.Add(this._continue);
             this.Controls.Add(this.pictureBox1);
@@ -126,6 +147,7 @@
         private System.Windows.Forms.PictureBox pictureBox1;
         private CustomButton _continue;
         private CustomButton exit;
+        private CustomButton setting_button;
     }
 }
 
